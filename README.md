@@ -1,9 +1,10 @@
-# Montréal Open Data for AI Agents
-## Données ouvertes de Montréal pour agents IA
-
-A composable skill hierarchy that gives AI agents native access to Montréal's 397 open datasets and 918 queryable resources — trees, transit, permits, crime, budget, and more.
+# Données ouvertes de Montréal pour agents IA
 
 Une hiérarchie de compétences composable qui donne aux agents IA un accès natif aux 397 jeux de données et 918 ressources interrogeables de Montréal.
+
+## Montréal Open Data for AI Agents
+
+A composable skill hierarchy that gives AI agents native access to Montréal's 397 open datasets and 918 queryable resources — trees, transit, permits, crime, budget, and more.
 
 ---
 
@@ -16,7 +17,7 @@ Une hiérarchie de compétences composable qui donne aux agents IA un accès nat
 /plugin marketplace add montrealdata/montreal-open-data
 ```
 
-**Manual (any agent):**
+**Manual (n'importe quel agent):**
 ```bash
 git clone https://github.com/montrealdata/montreal-open-data
 python3 scripts/setup.py     # Verify connectivity + configure API keys
@@ -38,7 +39,7 @@ The agent uses the skills to find the right dataset, build the API call, and pre
 
 ## What's Inside / Contenu
 
-### 15 Skills across 5 categories
+### 15 competences parmi 5 catégories / 15 Skills across 5 categories
 
 **Core** (4 skills) — Works for any CKAN portal:
 - `understand-ckan` — API reference (endpoints, pagination, conventions)
@@ -101,7 +102,7 @@ montreal-open-data/
 └── .gitignore
 ```
 
-Skills follow the [obra/superpowers](https://github.com/obra/superpowers) pattern: composable SKILL.md files that agents load on demand.
+These skills are delivered as a set of composable SKILL.md files that agents load on demand.
 
 ---
 
@@ -164,4 +165,4 @@ See `SETUP.md` for the skill format specification and architecture guide.
 
 CC BY 4.0, matching the City of Montréal's open data license.
 
-*Built with care for Montréal. / Construit avec soin pour Montréal.*
+*Built with care for the city I love. / Construit avec soin pour la ville que j'adore.*

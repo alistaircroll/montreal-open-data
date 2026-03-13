@@ -2,9 +2,9 @@
   "name": "montreal-open-data",
   "version": "0.5.0",
   "description": "Give AI agents native access to Montréal's 397+ open datasets — trees, transit, permits, crime, budget, and more. / Accès natif aux 397+ jeux de données ouvertes de Montréal.",
-  "author": "montrealdata",
+  "author": "alistaircroll",
   "license": "CC-BY-4.0",
-  "repository": "https://github.com/montrealdata/montreal-open-data",
+  "repository": "https://github.com/alistaircroll/montreal-open-data",
   "keywords": [
     "montreal", "open-data", "ckan", "civic", "government",
     "transit", "stm", "bixi", "trees", "permits", "budget",

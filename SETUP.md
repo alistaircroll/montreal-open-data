@@ -16,7 +16,11 @@ triggers:
 
 **Claude Code:**
 ```bash
-/plugin marketplace add montrealdata/montreal-open-data
+git clone https://github.com/alistaircroll/montreal-open-data.git
+cd montreal-open-data
+python3 -m venv .venv && source .venv/bin/activate && pip install mcp
+claude mcp add --transport stdio montreal-data --scope project -- "$(pwd)/.venv/bin/python3" "$(pwd)/mcp/read-server/server.py"
+ln -s "$(pwd)/skills" ~/.claude/skills/montreal-open-data
 ```
 
 **Other agents:** Clone this repo and point your agent at the `skills/` directory.

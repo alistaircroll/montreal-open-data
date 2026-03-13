@@ -4,17 +4,27 @@ A Model Context Protocol server that gives AI agents deterministic, tool-based a
 
 ## Quick Start
 
+### Prerequisites
+```bash
+cd montreal-open-data
+python3 -m venv .venv
+source .venv/bin/activate
+pip install mcp
+```
+
 ### Claude Code
 ```bash
-claude mcp add montreal-data python3 mcp/read-server/server.py
+# Use --scope project so the server appears in /mcp
+claude mcp add --transport stdio montreal-data --scope project -- "$(pwd)/.venv/bin/python3" "$(pwd)/mcp/read-server/server.py"
 ```
+Restart your Claude Code session after running this command.
 
 ### Claude Desktop (claude_desktop_config.json)
 ```json
 {
   "mcpServers": {
     "montreal-data": {
-      "command": "python3",
+      "command": "/path/to/montreal-open-data/.venv/bin/python3",
       "args": ["/path/to/montreal-open-data/mcp/read-server/server.py"]
     }
   }
@@ -26,7 +36,7 @@ claude mcp add montreal-data python3 mcp/read-server/server.py
 {
   "mcpServers": {
     "montreal-data": {
-      "command": "python3",
+      "command": ".venv/bin/python3",
       "args": ["mcp/read-server/server.py"],
       "cwd": "/path/to/montreal-open-data"
     }

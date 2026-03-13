@@ -15,11 +15,14 @@ Une hiérarchie de compétences composable qui donne aux agents IA un accès nat
 git clone https://github.com/alistaircroll/montreal-open-data.git
 cd montreal-open-data
 
-# 2. Installer la dépendance MCP
+# 2. Installer les dépendances dans un environnement virtuel
+python3 -m venv .venv
+source .venv/bin/activate
 pip install mcp
 
 # 3. Enregistrer le serveur MCP (9 outils d'accès aux données)
-claude mcp add --transport stdio montreal-data -- python3 mcp/read-server/server.py
+#    --scope project crée un fichier .mcp.json visible dans /mcp
+claude mcp add --transport stdio montreal-data --scope project -- "$(pwd)/.venv/bin/python3" "$(pwd)/mcp/read-server/server.py"
 
 # 4. Installer les compétences (connaissances et contexte pour votre agent)
 ln -s "$(pwd)/skills" ~/.claude/skills/montreal-open-data
@@ -29,6 +32,12 @@ python3 scripts/setup.py
 python3 scripts/catalog-refresh.py
 ```
 
+> **Note :** Après l'étape 3, relancez votre session Claude Code pour que le serveur apparaisse dans `/mcp`.
+> Le fichier `.mcp.json` créé doit rester dans le répertoire du projet.
+
+> **Note:** After step 3, restart your Claude Code session for the server to appear in `/mcp`.
+> The `.mcp.json` file created should stay in the project directory.
+
 ### Claude Desktop
 
 Ajouter à votre `claude_desktop_config.json` :
@@ -36,7 +45,7 @@ Ajouter à votre `claude_desktop_config.json` :
 {
   "mcpServers": {
     "montreal-data": {
-      "command": "python3",
+      "command": "/chemin/vers/montreal-open-data/.venv/bin/python3",
       "args": ["/chemin/vers/montreal-open-data/mcp/read-server/server.py"]
     }
   }
@@ -49,7 +58,7 @@ Ajouter à votre `claude_desktop_config.json` :
 {
   "mcpServers": {
     "montreal-data": {
-      "command": "python3",
+      "command": ".venv/bin/python3",
       "args": ["mcp/read-server/server.py"],
       "cwd": "/chemin/vers/montreal-open-data"
     }

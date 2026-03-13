@@ -1,0 +1,70 @@
+{
+  "name": "montreal-open-data",
+  "version": "0.5.0",
+  "description": "Give AI agents native access to Montréal's 397+ open datasets — trees, transit, permits, crime, budget, and more. / Accès natif aux 397+ jeux de données ouvertes de Montréal.",
+  "author": "montrealdata",
+  "license": "CC-BY-4.0",
+  "repository": "https://github.com/montrealdata/montreal-open-data",
+  "keywords": [
+    "montreal", "open-data", "ckan", "civic", "government",
+    "transit", "stm", "bixi", "trees", "permits", "budget",
+    "donnees-ouvertes", "ville-de-montreal"
+  ],
+  "skills": [
+    "skills/core/understand-ckan",
+    "skills/core/discover-datasets",
+    "skills/core/query-dataset",
+    "skills/core/download-resource",
+    "skills/domains/transit",
+    "skills/domains/environment",
+    "skills/domains/permits-and-planning",
+    "skills/domains/safety",
+    "skills/domains/budget-and-finance",
+    "skills/domains/culture-and-recreation",
+    "skills/domains/infrastructure",
+    "skills/geo/borough-context",
+    "skills/meta/bilingual-handling",
+    "skills/meta/error-recovery",
+    "skills/meta/data-freshness",
+    "skills/analysis/cross-dataset-joins",
+    "skills/analysis/time-series",
+    "skills/analysis/visualization",
+    "skills/geo/address-geocoding",
+    "skills/geo/spatial-queries"
+  ],
+  "mcp_servers": {
+    "montreal-data": {
+      "command": "python3",
+      "args": ["mcp/read-server/server.py"],
+      "description": "9 tools for querying Montréal open data: search, SQL, spatial, BIXI, boroughs"
+    }
+  },
+  "scripts": {
+    "setup": "python3 scripts/setup.py",
+    "health-check": "python3 scripts/health-check.py",
+    "catalog-refresh": "python3 scripts/catalog-refresh.py",
+    "field-inspector": "python3 scripts/field-inspector.py"
+  },
+  "setup": {
+    "post_install": "python3 scripts/setup.py --check",
+    "instructions": "SETUP.md"
+  },
+  "reference": [
+    "reference/dataset-catalog.json",
+    "reference/endpoint-registry.json",
+    "reference/borough-lookup.json",
+    "reference/org-summary.json",
+    "reference/catalog-stats.json"
+  ],
+  "requirements": {
+    "python": ">=3.8",
+    "packages": ["mcp"]
+  },
+  "optional_requirements": {
+    "stm_realtime": {
+      "description": "STM real-time bus/metro positions",
+      "register_at": "https://portail.developpeurs.stm.info",
+      "env_var": "STM_API_KEY"
+    }
+  }
+}

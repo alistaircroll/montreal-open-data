@@ -1,0 +1,36 @@
+{
+  "timestamp": "2026-03-13T01:49:17.003364+00:00",
+  "total_datasets": 397,
+  "datasets_with_datastore": 287,
+  "total_datastore_resources": 918,
+  "organizations": {
+    "Ville de Montréal": 383,
+    "Société de transport de Montréal": 7,
+    "Agence de mobilité durable de Montréal": 2,
+    "Bixi Montréal": 2,
+    "Regroupement des éco-quartiers": 2,
+    "211 Grand Montréal": 1
+  },
+  "top_tags": {
+    "SUM": 49,
+    "SG": 46,
+    "SIRR": 39,
+    "Arr.": 34,
+    "SEnv": 32,
+    "Eau": 31,
+    "SCAEC": 28,
+    "SE": 25,
+    "Contrat": 21,
+    "SGPMRS": 21,
+    "Dépense": 21,
+    "Mobilité": 17,
+    "SC": 17,
+    "Fournisseur": 16,
+    "Logement": 15,
+    "SDIS": 15,
+    "CN-NdG": 14,
+    "Côte-des-Neiges--Notre-Dame-de-Grâce": 14,
+    "SH": 13,
+    "Cours d eau": 13
+  }
+}

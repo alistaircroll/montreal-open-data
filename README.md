@@ -1,168 +1,211 @@
 # Données ouvertes de Montréal pour agents IA
 
-Une hiérarchie de compétences composable qui donne aux agents IA un accès natif aux 397 jeux de données et 918 ressources interrogeables de Montréal.
+Une hiérarchie de compétences composable qui donne aux agents IA un accès natif aux 397 jeux de données et 918 ressources interrogeables de Montréal — arbres, transport, permis, criminalité, budget, et plus encore.
 
-## Montréal Open Data for AI Agents
-
-A composable skill hierarchy that gives AI agents native access to Montréal's 397 open datasets and 918 queryable resources — trees, transit, permits, crime, budget, and more.
+*A composable skill hierarchy that gives AI agents native access to Montréal's 397 open datasets and 918 queryable resources — trees, transit, permits, crime, budget, and more.*
 
 ---
 
-## Quick Start / Démarrage rapide
+## Démarrage rapide
 
-### Installation
+### Claude Code
 
-**Claude Code:**
 ```bash
-/plugin marketplace add montrealdata/montreal-open-data
+# 1. Cloner le dépôt
+git clone https://github.com/alistaircroll/montreal-open-data.git
+cd montreal-open-data
+
+# 2. Installer la dépendance MCP
+pip install mcp
+
+# 3. Enregistrer le serveur MCP (9 outils d'accès aux données)
+claude mcp add --transport stdio montreal-data -- python3 mcp/read-server/server.py
+
+# 4. Installer les compétences (connaissances et contexte pour votre agent)
+ln -s "$(pwd)/skills" ~/.claude/skills/montreal-open-data
+
+# 5. Générer les fichiers de référence locaux
+python3 scripts/setup.py
+python3 scripts/catalog-refresh.py
 ```
 
-**Manual (n'importe quel agent):**
-```bash
-git clone https://github.com/montrealdata/montreal-open-data
-python3 scripts/setup.py     # Verify connectivity + configure API keys
-python3 scripts/catalog-refresh.py  # Generate local reference files
+### Claude Desktop
+
+Ajouter à votre `claude_desktop_config.json` :
+```json
+{
+  "mcpServers": {
+    "montreal-data": {
+      "command": "python3",
+      "args": ["/chemin/vers/montreal-open-data/mcp/read-server/server.py"]
+    }
+  }
+}
 ```
 
-### First Query / Première requête
+### Cursor / Autres clients MCP
 
-Once installed, ask your agent naturally:
+```json
+{
+  "mcpServers": {
+    "montreal-data": {
+      "command": "python3",
+      "args": ["mcp/read-server/server.py"],
+      "cwd": "/chemin/vers/montreal-open-data"
+    }
+  }
+}
+```
 
-> "How many trees are there in the Plateau?"
-> "Combien d'arbres y a-t-il dans le Plateau?"
-> "Show me building permits in my neighborhood this month."
-> "Quels crimes ont été signalés près de chez moi?"
+### Vérifier l'installation
 
-The agent uses the skills to find the right dataset, build the API call, and present results in your language.
+```bash
+claude mcp list                     # Devrait afficher montreal-data
+python3 scripts/health-check.py     # Devrait afficher tous les points d'accès OK
+```
 
----
+### Première requête
 
-## What's Inside / Contenu
+Une fois installé, posez vos questions naturellement :
 
-### 15 competences parmi 5 catégories / 15 Skills across 5 categories
+> « Combien d'arbres y a-t-il dans le Plateau? »
+> « Quels crimes ont été signalés près de chez moi? »
+> « How many trees are there in the Plateau? »
+> « Show me building permits in my neighborhood this month. »
 
-**Core** (4 skills) — Works for any CKAN portal:
-- `understand-ckan` — API reference (endpoints, pagination, conventions)
-- `discover-datasets` — Catalog search (397 datasets, keyword → slug)
-- `query-dataset` — DataStore SQL queries (filters, aggregation, pagination)
-- `download-resource` — File downloads (CSV, GeoJSON, Shapefile, GBFS, GTFS)
-
-**Domains** (7 skills) — Montréal-specific dataset expertise:
-- `transit` — STM bus/metro, BIXI bike-sharing, Exo commuter trains
-- `environment` — 333,556 trees, air quality, green spaces, canopy
-- `permits-and-planning` — Building permits, zoning, property assessment
-- `safety` — Crime, 311 requests, fire interventions, road collisions
-- `budget-and-finance` — Operating budget, contracts, subsidies, tax rates
-- `culture-and-recreation` — Parks, sports, murals, skating rinks
-- `infrastructure` — Roads, snow removal, garbage, Planif-Neige SOAP API
-
-**Geographic** (1 skill):
-- `borough-context` — 19 boroughs + 15 municipalities, name aliases, coordinates
-
-**Meta** (3 skills):
-- `bilingual-handling` — French/English navigation (all metadata is French)
-- `error-recovery` — API failure diagnosis and recovery patterns
-- `data-freshness` — Update schedules, staleness detection
-
-### 4 Scripts
-
-| Script | Purpose |
-|--------|---------|
-| `scripts/setup.py` | Onboarding wizard: health check + API key config |
-| `scripts/health-check.py` | Validate all 9 data endpoints |
-| `scripts/catalog-refresh.py` | Pull fresh catalog → reference JSON files |
-| `scripts/field-inspector.py` | Discover actual field names for any dataset |
-
-### 5 Reference Files (generated)
-
-| File | Content |
-|------|---------|
-| `reference/dataset-catalog.json` | All 397 datasets with metadata |
-| `reference/endpoint-registry.json` | All 918 DataStore resource UUIDs |
-| `reference/borough-lookup.json` | Borough codes, names, aliases, coordinates |
-| `reference/org-summary.json` | Datasets grouped by organization |
-| `reference/catalog-stats.json` | Catalog refresh timestamp + summary |
+L'agent utilise les compétences pour le contexte et les outils MCP pour l'accès aux données, présentant les résultats dans votre langue.
 
 ---
 
-## Architecture / Architecture
+## Contenu
+
+### 20 compétences dans 5 catégories
+
+**Noyau** (4 compétences) — Fonctionne avec tout portail CKAN :
+- `understand-ckan` — Référence API (points d'accès, pagination, conventions)
+- `discover-datasets` — Recherche dans le catalogue (397 jeux de données)
+- `query-dataset` — Requêtes SQL DataStore (filtres, agrégation, pagination)
+- `download-resource` — Téléchargement de fichiers (CSV, GeoJSON, Shapefile, GBFS, GTFS)
+
+**Domaines** (7 compétences) — Expertise spécifique à Montréal :
+- `transit` — STM bus/métro, BIXI vélopartage, Exo trains de banlieue
+- `environment` — 333 556 arbres, qualité de l'air, espaces verts, canopée
+- `permits-and-planning` — Permis de construction, zonage, évaluation foncière
+- `safety` — Criminalité, requêtes 311, interventions incendie, collisions routières
+- `budget-and-finance` — Budget de fonctionnement, contrats, subventions, taux de taxation
+- `culture-and-recreation` — Parcs, sports, murales, patinoires
+- `infrastructure` — Chaussées, déneigement, collecte des déchets, API SOAP Planif-Neige
+
+**Géographique** (3 compétences) :
+- `borough-context` — 19 arrondissements + 15 municipalités, alias, coordonnées
+- `address-geocoding` — Géocodage Nominatim, conversion NAD83 MTM8
+- `spatial-queries` — Recherche par rayon (boîte englobante + Haversine)
+
+**Analyse** (3 compétences) :
+- `cross-dataset-joins` — Jointures entre jeux de données (arbres + 311 + incendie par arrondissement)
+- `time-series` — Patrons temporels, saisonnalité montréalaise
+- `visualization` — Tableaux texte, SVG, cartes, export CSV, React/Recharts
+
+**Méta** (3 compétences) :
+- `bilingual-handling` — Navigation français/anglais (toutes les métadonnées sont en français)
+- `error-recovery` — Diagnostic et récupération d'erreurs API (403, 409, timeout)
+- `data-freshness` — Calendriers de mise à jour, détection de données périmées
+
+### 4 scripts
+
+| Script | Description |
+|--------|-------------|
+| `scripts/setup.py` | Assistant d'intégration : vérification de santé + configuration des clés API |
+| `scripts/health-check.py` | Valider les 9 points d'accès de données |
+| `scripts/catalog-refresh.py` | Extraire le catalogue à jour → fichiers JSON de référence |
+| `scripts/field-inspector.py` | Découvrir les noms de champs réels d'un jeu de données |
+
+### 5 fichiers de référence (générés)
+
+| Fichier | Contenu |
+|---------|---------|
+| `reference/dataset-catalog.json` | Les 397 jeux de données avec métadonnées |
+| `reference/endpoint-registry.json` | Les 918 UUID de ressources DataStore |
+| `reference/borough-lookup.json` | Codes, noms, alias et coordonnées des arrondissements |
+| `reference/org-summary.json` | Jeux de données par organisation |
+| `reference/catalog-stats.json` | Horodatage de rafraîchissement + sommaire |
+
+---
+
+## Architecture
 
 ```
 montreal-open-data/
 ├── skills/
-│   ├── core/           ← Load first. Works for any CKAN portal.
-│   ├── domains/        ← Load by topic. Montréal-specific expertise.
-│   ├── geo/            ← Load for location queries.
-│   ├── meta/           ← Load for language, errors, freshness.
-│   └── analysis/       ← (Coming soon) Cross-dataset reasoning.
-├── reference/          ← Machine-readable JSON for fast lookups.
-├── scripts/            ← Automation (setup, health, catalog, inspect).
-├── plugin.json         ← Plugin manifest for Claude Code.
-├── SETUP.md            ← Human + agent readable onboarding guide.
+│   ├── core/           ← Charger en premier. Fonctionne avec tout portail CKAN.
+│   ├── domains/        ← Charger par sujet. Expertise spécifique à Montréal.
+│   ├── geo/            ← Charger pour les requêtes géographiques.
+│   ├── analysis/       ← Jointures inter-données, séries temporelles, visualisation.
+│   └── meta/           ← Langue, erreurs, fraîcheur des données.
+├── mcp/read-server/    ← Serveur MCP : 9 outils bilingues.
+├── reference/          ← JSON lisible par machine pour recherches rapides.
+├── scripts/            ← Automatisation (installation, santé, catalogue, inspection).
+├── plugin.json         ← Manifeste de plugin pour Claude Code.
+├── SETUP.md            ← Guide d'intégration lisible par humain et agent.
 └── .gitignore
 ```
 
-These skills are delivered as a set of composable SKILL.md files that agents load on demand.
+Les compétences sont livrées sous forme de fichiers SKILL.md composables que les agents chargent à la demande.
 
 ---
 
-## Data Sources / Sources de données
+## Sources de données
 
-**Primary:** City of Montréal's open data portal
-- Portal: [donnees.montreal.ca](https://donnees.montreal.ca/en)
-- API: CKAN Action API v3
-- License: CC BY 4.0
-- 397 datasets from 6 organizations
+**Principale :** Portail de données ouvertes de la Ville de Montréal
+- Portail : [donnees.montreal.ca](https://donnees.montreal.ca)
+- API : CKAN Action API v3
+- Licence : CC BY 4.0
+- 397 jeux de données de 6 organisations
 
-### MCP Server (9 tools)
+### Serveur MCP (9 outils bilingues)
 
-For agents that support the Model Context Protocol:
-```bash
-claude mcp add montreal-data python3 mcp/read-server/server.py
-```
+`search_datasets` · `query_dataset` · `get_dataset_fields` · `get_borough_info` ·
+`find_nearby` · `bixi_stations` · `dataset_stats` · `list_datasets_by_topic` · `health_check`
 
-Tools: `search_datasets`, `query_dataset`, `get_dataset_fields`, `get_borough_info`,
-`find_nearby`, `bixi_stations`, `dataset_stats`, `list_datasets_by_topic`, `health_check`
-
-See `mcp/read-server/README.md` for configuration with Claude Desktop, Cursor, and other clients.
+Voir `mcp/read-server/README.md` pour les détails et la configuration avancée.
 
 ---
 
-**Also covered:**
-- BIXI bike-sharing (GBFS — public, no auth)
-- STM bus/metro schedules (GTFS static — public) and real-time (GTFS-RT — free registration)
-- Exo commuter trains (GTFS — public)
-- Planif-Neige snow removal (SOAP API — public)
-- Données Québec provincial portal (CKAN — public)
+**Aussi couvert :**
+- BIXI vélopartage (GBFS — public, sans authentification)
+- STM horaires bus/métro (GTFS statique — public) et temps réel (GTFS-RT — inscription gratuite)
+- Exo trains de banlieue (GTFS — public)
+- Planif-Neige déneigement (API SOAP — public)
+- Données Québec portail provincial (CKAN — public)
 
 ---
 
-## Roadmap / Feuille de route
+## Feuille de route
 
-- [x] Phase 1: Core skills (CKAN, discovery, query, bilingual)
-- [x] Phase 2: Domain skills (transit, environment, permits, safety, budget, culture, infrastructure)
-- [x] Phase 3: Scripts + reference data (catalog, health check, field inspector, borough lookup)
-- [x] Phase 4: Analysis skills (cross-dataset joins, time series, visualization)
-- [x] Phase 5: MCP server — 9 tools for deterministic data access (search, SQL, spatial, BIXI, boroughs)
-- [ ] Phase 6: Citizen-agent delegation (authenticated municipal actions)
-
----
-
-## Contributing / Contribuer
-
-We welcome contributions! / Les contributions sont les bienvenues!
-
-1. Fork this repo
-2. Add or improve a SKILL.md file
-3. Test against the live API: `python3 scripts/health-check.py`
-4. Submit a pull request
-
-See `SETUP.md` for the skill format specification and architecture guide.
+- [x] Phase 1 : Compétences de base (CKAN, découverte, requête, bilingue)
+- [x] Phase 2 : Compétences de domaine (transport, environnement, permis, sécurité, budget, culture, infrastructure)
+- [x] Phase 3 : Scripts + données de référence (catalogue, santé, inspecteur de champs, arrondissements)
+- [x] Phase 4 : Compétences d'analyse (jointures inter-données, séries temporelles, visualisation)
+- [x] Phase 5 : Serveur MCP — 9 outils d'accès déterministe aux données (recherche, SQL, spatial, BIXI, arrondissements)
+- [ ] Phase 6 : Délégation citoyen-agent (actions municipales authentifiées)
 
 ---
 
-## License / Licence
+## Contribuer
 
-CC BY 4.0, matching the City of Montréal's open data license.
+Les contributions sont les bienvenues!
 
-*Built with care for the city I love. / Construit avec soin pour la ville que j'adore.*
+1. Faire un fork de ce dépôt
+2. Ajouter ou améliorer un fichier SKILL.md
+3. Tester avec l'API en direct : `python3 scripts/health-check.py`
+4. Soumettre une demande de tirage (*pull request*)
+
+Voir `SETUP.md` pour la spécification du format de compétence et le guide d'architecture.
+
+---
+
+## Licence
+
+CC BY 4.0, correspondant à la licence de données ouvertes de la Ville de Montréal.
+
+*Construit avec soin pour la ville que j'adore. / Built with care for the city I love.*
